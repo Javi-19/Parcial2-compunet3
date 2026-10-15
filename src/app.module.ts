@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StudentModule } from './student/student.module';
 import { UserModule } from './user/user.module';
 import { SeedModule } from './seed/seed.module';
+import { ProgramModule } from './program/program.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SeedModule } from './seed/seed.module';
     UserModule,
     SeedModule,
     // TODO Reto 1: registra aquí el ProgramModule
+    ProgramModule
 
   ],
   controllers: [],

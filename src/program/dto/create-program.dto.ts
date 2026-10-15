@@ -2,6 +2,23 @@
 //   - name: string, mínimo 3 caracteres
 //   - code: string de 3 a 6 letras MAYÚSCULAS (ej. "SIS", "MED")
 //   - credits: entero positivo
+
+import { IsInt, IsPositive, IsString, IsUppercase, MaxLength, MinLength } from "class-validator";
+
 export class CreateProgramDto {
+
+     @IsString()
+    @MinLength(3)
+    name: string;
+
+    @IsString()
+    @IsUppercase()
+    @MinLength(3)
+    @MaxLength(6)
+    code: string;
+
+    @IsInt()
+    @IsPositive()
+    credits: number;
 
 }

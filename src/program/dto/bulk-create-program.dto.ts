@@ -9,10 +9,10 @@ import { CreateProgramDto } from "./create-program.dto";
 //     (pista: @ValidateNested({ each: true }) + @Type(() => CreateProgramDto))
 export class BulkCreateProgramDto {
     @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMaxSize(10)
-  @ArrayUnique((program: CreateProgramDto) => program.name)
-  @ValidateNested({ each: true })
-  @Type(() => CreateProgramDto)
-  programs: CreateProgramDto[];
+    @ArrayNotEmpty()
+    @ArrayMaxSize(10)
+    @ArrayUnique((program: CreateProgramDto) => program.name)
+    @ValidateNested({ each: true })
+    @Type(() => CreateProgramDto)
+    programs: CreateProgramDto[];
 }

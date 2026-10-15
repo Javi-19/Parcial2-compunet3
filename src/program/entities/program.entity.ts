@@ -23,13 +23,20 @@ export class Program {
     })
     name: string;
 
+    @Column({
+        type: "text",
+        unique: true
+    })
+    code: string;
+
     @Column("int")
     credits: number;
 
     @OneToMany(
-        () => Student
+        () => Student,
+        (student) => student.program
     )
-    student?: Student[];
+    students?: Student[];
 
     @ManyToOne(
         () => User,
