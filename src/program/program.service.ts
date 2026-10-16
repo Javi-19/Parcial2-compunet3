@@ -8,6 +8,7 @@ import { Student } from 'src/student/entities/student.entity';
 import { User } from 'src/user/entities/user.entity';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { AssignStudentsDto } from './dto/assign-students.dto';
+import { BulkCreateProgramDto } from './dto/bulk-create-program.dto';
 
 @Injectable()
 export class ProgramService {
@@ -37,22 +38,22 @@ export class ProgramService {
         @InjectRepository(Program)
         private readonly programRepository: Repository<Program>,
         private readonly datasource: DataSource
-    ){}
+    ) { }
 
-    async create(createProgramDto: CreateProgramDto, user: User){
-        try{
+    async create(createProgramDto: CreateProgramDto, user: User) {
+        try {
             const program = this.programRepository.create({
                 ...createProgramDto,
                 createdBy: user
             });
             await this.programRepository.save(program);
             return program;
-        }catch(error){
+        } catch (error) {
             this.handleException(error);
         }
     }
 
-    findAll(paginationDto: PaginationDto){
+    findAll(paginationDto: PaginationDto) {
         const { limit, skip } = paginationDto;
         return this.programRepository.find({
             take: limit,
@@ -60,88 +61,83 @@ export class ProgramService {
         });
     }
 
-    async findOne(term: string){
+    async findOne(term: string) {
         let program: Program | null;
 
-        if(isUUID(term)){
+        if (isUUID(term)) {
             program = await this.programRepository.findOne({
                 where: { id: term },
                 relations: { students: true }
             });
-        }else{
+        } else {
             program = await this.programRepository.createQueryBuilder("program")
                 .where("UPPER(program.name) = :name", { name: term.toUpperCase() })
                 .leftJoinAndSelect("program.students", "students")
                 .getOne();
         }
 
-        if(!program) throw new NotFoundException(`Program ${term} not found`);
+        if (!program) throw new NotFoundException(`Program ${term} not found`);
 
         return program;
     }
 
-    async addEstudents(id: string, assignStudentsDto: AssignStudentsDto){
-        const club = await this.findOne(id);
+    async addEstudents(id: string, assignStudentsDto: AssignStudentsDto) {
+        const program = await this.findOne(id);
 
         const queryRunner = this.datasource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
-        try{
-            for(const id of assignStudentsDto.studentIds){
+        try {
+            for (const id of assignStudentsDto.studentIds) {
+               
                 // update() no dispara @BeforeUpdate, así el nickname del estudiante no cambia
-                const result = await queryRunner.manager.update(Student, { studentIds }, { program: { id } });
-                if(!result.affected)
-                    throw new NotFoundException(`Student with id ${studentIds} not found`);
+                const result = await queryRunner.manager.update(Student, { id }, { program: { id } });
+                if (!result.affected)
+                    throw new NotFoundException(`Student with id ${id} not found`);
             }
 
-            const totalStudents = await queryRunner.manager.count(Student, { where: { program: { id } } });
-            if(totalStudents > program.maxStudents)
-                throw new BadRequestException(`Program ${program.name} only allows ${program.maxStudents} students`);
-
             await queryRunner.commitTransaction();
-        }catch(error){
+        } catch (error) {
             await queryRunner.rollbackTransaction();
             this.handleException(error);
-        }finally{
+        } finally {
             await queryRunner.release();
         }
 
         return this.findOne(id);
     }
 
-    async remove(id: string){
-        const club = await this.findOne(id);
-        await this.clubRepository.remove(club);
-    }
 
-    private handleException(error: any): never{
-        if(error instanceof HttpException) throw error;
 
-        if(error.code === '23505')
+    private handleException(error: any): never {
+        if (error instanceof HttpException) throw error;
+
+        if (error.code === '23505')
             throw new ConflictException(error.detail);
 
         this.logger.error(error);
         throw new InternalServerErrorException('Unexpected error, check server logs');
     }
-async createMany(dto: CreateManyClubsDto, user: User) {
-    const runner = this.datasource.createQueryRunner();
-    await runner.connect();
-    await runner.startTransaction();
-    try {
-        const created: Club[] = [];
-        for (const details of dto.clubs) {
-            const club = runner.manager.create(Club, { ...details, createdBy: user });
-            created.push(await runner.manager.save(Club, club));
+
+    async createMany(dto: BulkCreateProgramDto, user: User) {
+        const runner = this.datasource.createQueryRunner();
+        await runner.connect();
+        await runner.startTransaction();
+        try {
+            const created: Program[] = [];
+            for (const details of dto.programs) {
+                const program = runner.manager.create(Program, { ...details, createdBy: user });
+                created.push(await runner.manager.save(Program, program));
+            }
+            await runner.commitTransaction();
+            return created;
+        } catch (error) {
+            await runner.rollbackTransaction();
+            this.handleException(error);
+        } finally {
+            await runner.release();
         }
-        await runner.commitTransaction();
-        return created;
-    } catch (error) {
-        await runner.rollbackTransaction();
-        this.handleException(error);
-    } finally {
-        await runner.release();
     }
-}
 
 }

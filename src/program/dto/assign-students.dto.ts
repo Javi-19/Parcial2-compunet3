@@ -4,6 +4,6 @@ import { ArrayNotEmpty, IsArray, IsEmail, IsUUID } from "class-validator";
 export class AssignStudentsDto {
     @IsArray()
     @ArrayNotEmpty()
-    @IsUUID(undefined, { each: true })
-    studentIds: string[] | undefined;
+    @IsUUID("all", { each: true, })
+    studentIds: string[];
 }
