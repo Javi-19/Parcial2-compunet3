@@ -81,7 +81,7 @@ export class ProgramService {
         return program;
     }
 
-    async addEstudents(id: string, assignStudentsDto: AssignStudentsDto) {
+    async assignStudents(id: string, assignStudentsDto: AssignStudentsDto) {
         const program = await this.findOne(id);
 
         const queryRunner = this.datasource.createQueryRunner();
