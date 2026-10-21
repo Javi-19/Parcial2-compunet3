@@ -38,6 +38,11 @@ export class ProgramController {
     return this.programService.findAll(paginationDto);
   }
 
+  @Get("program/:id")
+  find(@Param('id', ParseUUIDPipe) id:string){
+    return this.programService.findOne(id);
+  }
+
  
 
   @Post(":id/students")
