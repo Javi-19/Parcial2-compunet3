@@ -45,7 +45,7 @@ export class ProgramController {
 
  
 
-  @Post(":id/students")
+  @Patch(":id/students")
   @Auth(ValidRoles.admin)
   addStudents(@Param("id", ParseUUIDPipe) id: string, @Body() assignStudentsDto: AssignStudentsDto){
     return this.programService.assignStudents(id, assignStudentsDto);
