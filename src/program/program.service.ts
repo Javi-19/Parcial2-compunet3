@@ -89,12 +89,12 @@ export class ProgramService {
         await queryRunner.startTransaction();
 
         try {
-            for (const id of assignStudentsDto.studentIds) {
+            for (const studentId of assignStudentsDto.studentIds) {
                
                 // update() no dispara @BeforeUpdate, así el nickname del estudiante no cambia
-                const result = await queryRunner.manager.update(Student, { id }, { program: { id } });
+                const result = await queryRunner.manager.update(Student, { id: studentId }, { program: { id: program.id  } });
                 if (!result.affected)
-                    throw new NotFoundException(`Student with id ${id} not found`);
+                    throw new NotFoundException(`Student with id ${studentId} not found`);
             }
 
             await queryRunner.commitTransaction();
