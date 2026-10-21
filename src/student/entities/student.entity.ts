@@ -1,7 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Grades } from "./grades.entity";
 import { ApiProperty } from "@nestjs/swagger";
-import { Program } from "src/program/entities/program.entity";
+import { Program } from "../../program/entities/program.entity";
 
 @Entity()
 export class Student {

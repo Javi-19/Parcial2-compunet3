@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ProgramService } from './program.service';
 import { BulkCreateProgramDto } from './dto/bulk-create-program.dto';
-import { PaginationDto } from 'src/student/dto/pagination.dto';
-import { Auth } from 'src/user/decorators/auth.decorator';
-import { GetUser } from 'src/user/decorators/get-user.decorator';
-import { User } from 'src/user/entities/user.entity';
-import { ValidRoles } from 'src/user/enums/valid-roles.enum';
+import { PaginationDto } from '../student/dto/pagination.dto';
+import { Auth } from '../user/decorators/auth.decorator';
+import { GetUser } from '../user/decorators/get-user.decorator';
+import { User } from '../user/entities/user.entity';
+import { ValidRoles } from '../user/enums/valid-roles.enum';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { AssignStudentsDto } from './dto/assign-students.dto';
 

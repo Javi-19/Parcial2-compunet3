@@ -3,8 +3,8 @@ import { StudentService } from './student.service';
 import { CreateStudent } from './dto/create-student.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { Auth } from 'src/user/decorators/auth.decorator';
-import { ValidRoles } from 'src/user/enums/valid-roles.enum';
+import { Auth } from '../user/decorators/auth.decorator';
+import { ValidRoles } from '../user/enums/valid-roles.enum';
 import { ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiCreatedResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Student } from './entities/student.entity';
 
