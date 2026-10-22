@@ -12,7 +12,7 @@ export class CreateProgramDto {
     name: string;
 
     @IsString()
-    @Matches("/^[A-Z]{3,6}$/")
+    @Matches(/^[A-Z]{3,6}$/)
     code: string;
 
     @IsInt()
