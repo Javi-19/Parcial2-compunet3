@@ -4,7 +4,7 @@ export class CreateAdvisorDto {
 
     @IsString()
     @MinLength(5)
-    fullname: string;
+    fullName: string;
 
     @IsString()
     @IsEmail()
