@@ -5,7 +5,8 @@ import { PaginationDto } from '../student/dto/pagination.dto';
 import { Advisor } from './entities/advisor.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { isUUID } from 'class-validator';
+import { AssignStudentsDto } from '../program/dto/assign-students.dto';
+import { Student } from '../student/entities/student.entity';
 
 @Injectable()
 export class AdvisorService {
@@ -17,6 +18,34 @@ export class AdvisorService {
     private readonly advisorRepository: Repository<Advisor>,
     private readonly datasource: DataSource
   ) { }
+
+
+  async assignStudents(id: string, assignStudentsDto: AssignStudentsDto) {
+          const advisor = await this.findOne(id);
+      
+          const queryRunner = this.datasource.createQueryRunner();
+          await queryRunner.connect();
+          await queryRunner.startTransaction();
+      
+          try {
+              for (const studentId of assignStudentsDto.studentIds) {
+                 
+                  // update() no dispara @BeforeUpdate, así el nickname del estudiante no cambia
+                  const result = await queryRunner.manager.update(Student, { id: studentId }, { advisor: { id: advisor.id  } });
+                  if (!result.affected)
+                      throw new NotFoundException(`Student with id ${studentId} not found`);
+              }
+      
+              await queryRunner.commitTransaction();
+          } catch (error) {
+              await queryRunner.rollbackTransaction();
+              this.handleException(error);
+          } finally {
+              await queryRunner.release();
+          }
+          
+          return this.findOne(id);
+      }
 
 
   async create(createAdvisorDto: CreateAdvisorDto, user: User) {

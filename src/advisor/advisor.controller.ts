@@ -6,6 +6,7 @@ import { Auth } from '../user/decorators/auth.decorator';
 import { ValidRoles } from '../user/enums/valid-roles.enum';
 import { User } from '../user/entities/user.entity';
 import { PaginationDto } from '../student/dto/pagination.dto';
+import { AssignStudentsDto } from '../program/dto/assign-students.dto';
 
 
 @Controller('advisor')
@@ -19,20 +20,21 @@ export class AdvisorController {
   }
 
   @Get()
-    findAll(@Query() paginationDto: PaginationDto){
-      return this.advisorService.findAll(paginationDto);
-    }
-  
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.advisorService.findAll(paginationDto);
+  }
+
 
   @Get(":id")
-    find(@Param('id', ParseUUIDPipe) id:string){
-      return this.advisorService.findOne(id);
-    }
+  find(@Param('id', ParseUUIDPipe) id: string) {
+    return this.advisorService.findOne(id);
+  }
 
-  // // @Patch(':id')
-  // // update(@Param('id') id: string, @Body() updateAdvisorDto: UpdateAdvisorDto) {
-  // //   return this.advisorService.update(+id, updateAdvisorDto);
-  // // }
+  @Patch(':id/students')
+  @Auth(ValidRoles.admin)
+  assignStudents(@Param("id", ParseUUIDPipe) id: string, @Body() assignStudentsDto: AssignStudentsDto) {
+    return this.advisorService.assignStudents(id, assignStudentsDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

@@ -22,10 +22,10 @@ export class Advisor {
 
     @OneToMany(
         () => Student,
-        (student) => student.advisorId
+        (student) => student.advisor
     )
     students?: Student[];
-    
+
     @ManyToOne(
         () => User,
         { nullable: true }
