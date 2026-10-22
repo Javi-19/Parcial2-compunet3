@@ -3,7 +3,7 @@
 //   - code: string de 3 a 6 letras MAYÚSCULAS (ej. "SIS", "MED")
 //   - credits: entero positivo
 
-import { IsInt, IsPositive, IsString, IsUppercase, MaxLength, MinLength } from "class-validator";
+import { IsInt, IsPositive, IsString, IsUppercase, Matches, MaxLength, MinLength } from "class-validator";
 
 export class CreateProgramDto {
 
@@ -12,9 +12,7 @@ export class CreateProgramDto {
     name: string;
 
     @IsString()
-    @IsUppercase()
-    @MinLength(3)
-    @MaxLength(6)
+    @Matches("/^[A-Z]{3,6}$/")
     code: string;
 
     @IsInt()
