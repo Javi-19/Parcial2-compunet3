@@ -2,6 +2,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, Prima
 import { Grades } from "./grades.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { Program } from "../../program/entities/program.entity";
+import { Advisor } from "../../advisor/entities/advisor.entity";
 
 @Entity()
 export class Student {
@@ -98,6 +99,13 @@ export class Student {
         { nullable: true, onDelete: "SET NULL" }
     )
     program?: Program;
+
+    @ManyToOne(
+        () => Advisor,
+        (advisor) => advisor.students,
+        { nullable: true, onDelete: "SET NULL" }
+    )
+    advisorId?: Advisor;
 
     @BeforeInsert()
     checkNicknameInsert(){

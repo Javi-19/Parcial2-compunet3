@@ -1,5 +1,6 @@
+import { Student } from "../../student/entities/student.entity";
 import { User } from "../../user/entities/user.entity";
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 export class Advisor {
 
@@ -19,6 +20,12 @@ export class Advisor {
     office: string;
 
 
+    @OneToMany(
+        () => Student,
+        (student) => student.advisorId
+    )
+    students?: Student[];
+    
     @ManyToOne(
         () => User,
         { nullable: true }
