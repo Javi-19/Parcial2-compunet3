@@ -105,7 +105,7 @@ export class Student {
         (advisor) => advisor.students,
         { nullable: true, onDelete: "SET NULL" }
     )
-    advisor?: Advisor;
+    advisor?: Advisor | null;
 
     @BeforeInsert()
     checkNicknameInsert(){

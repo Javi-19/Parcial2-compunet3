@@ -21,31 +21,31 @@ export class AdvisorService {
 
 
   async assignStudents(id: string, assignStudentsDto: AssignStudentsDto) {
-          const advisor = await this.findOne(id);
-      
-          const queryRunner = this.datasource.createQueryRunner();
-          await queryRunner.connect();
-          await queryRunner.startTransaction();
-      
-          try {
-              for (const studentId of assignStudentsDto.studentIds) {
-                 
-                  // update() no dispara @BeforeUpdate, así el nickname del estudiante no cambia
-                  const result = await queryRunner.manager.update(Student, { id: studentId }, { advisor: { id: advisor.id  } });
-                  if (!result.affected)
-                      throw new NotFoundException(`Student with id ${studentId} not found`);
-              }
-      
-              await queryRunner.commitTransaction();
-          } catch (error) {
-              await queryRunner.rollbackTransaction();
-              this.handleException(error);
-          } finally {
-              await queryRunner.release();
-          }
-          
-          return this.findOne(id);
+    const advisor = await this.findOne(id);
+
+    const queryRunner = this.datasource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      for (const studentId of assignStudentsDto.studentIds) {
+
+        // update() no dispara @BeforeUpdate, así el nickname del estudiante no cambia
+        const result = await queryRunner.manager.update(Student, { id: studentId }, { advisor: { id: advisor.id } });
+        if (!result.affected)
+          throw new NotFoundException(`Student with id ${studentId} not found`);
       }
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.handleException(error);
+    } finally {
+      await queryRunner.release();
+    }
+
+    return this.findOne(id);
+  }
 
 
   async create(createAdvisorDto: CreateAdvisorDto, user: User) {
@@ -83,8 +83,22 @@ export class AdvisorService {
   }
 
 
-  remove(id: number) {
-    return `This action removes a #${id} advisor`;
+  async removeAdvisor(advisorId: string, studentId: string) {
+    const result = await this.datasource
+      .createQueryBuilder()
+      .update(Student)
+      .set({ advisor: null })
+      .where('id = :studentId', { studentId })
+      .andWhere('"advisorId" = :advisorId', { advisorId })
+      .execute();
+
+    if (!result.affected) {
+      throw new NotFoundException(
+        'Student is not assigned to this advisor'
+      );
+    }
+
+    return { message: 'Student unassigned successfully' };
   }
 
   private handleException(error: any): never {

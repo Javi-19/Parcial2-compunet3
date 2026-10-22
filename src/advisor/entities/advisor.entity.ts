@@ -1,7 +1,8 @@
 import { Student } from "../../student/entities/student.entity";
 import { User } from "../../user/entities/user.entity";
-import { Column, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity()
 export class Advisor {
 
     @PrimaryGeneratedColumn("uuid")

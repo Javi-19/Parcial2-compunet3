@@ -7,6 +7,7 @@ import { ValidRoles } from '../user/enums/valid-roles.enum';
 import { User } from '../user/entities/user.entity';
 import { PaginationDto } from '../student/dto/pagination.dto';
 import { AssignStudentsDto } from '../program/dto/assign-students.dto';
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
 
 
 @Controller('advisor')
@@ -25,7 +26,7 @@ export class AdvisorController {
   }
 
 
-  @Get(":id")
+  @Get(':id')
   find(@Param('id', ParseUUIDPipe) id: string) {
     return this.advisorService.findOne(id);
   }
@@ -36,8 +37,16 @@ export class AdvisorController {
     return this.advisorService.assignStudents(id, assignStudentsDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.advisorService.remove(+id);
-  // }
+  @Auth(ValidRoles.admin)
+  @ApiOperation({ summary: "Delete a advisor", description: "Requires the admin role" })
+  @ApiParam({ name: "id", description: "advisor id (UUID)", format: "uuid" })
+  @ApiOkResponse({ description: "advisor was deleted" })
+  @ApiNotFoundResponse({ description: "advisor not found" })
+  @Delete(':advisorId/students/:studentId')
+  remove(
+    @Param('advisorId', ParseUUIDPipe) advisorId: string,
+    @Param('studentId', ParseUUIDPipe) studentId: string
+  ) {
+    return this.advisorService.removeAdvisor(advisorId, studentId);
+  }
 }
